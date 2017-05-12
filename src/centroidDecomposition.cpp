@@ -73,26 +73,26 @@ class CentroidTree {
         return sz[v];
     }
  
-	void _decompose(int v=1, int p=-1) {
-		if(processed[v]) return;
+    void _decompose(int v=1, int p=-1) {
+        if(processed[v]) return;
 
         for(auto &c: originalTree[v]) {
-			if(!processed[c] && (sz[c] > sz[v]/2)) {
+            if(!processed[c] && (sz[c] > sz[v]/2)) {
                     sz[v] -= sz[c]; sz[c] += sz[v];
                     return _decompose(c, p);
-			}
-		}
+            }
+        }
 
-		processed[v] = 1;
+        processed[v] = 1;
 
-		if(p==-1) { rootIndex = v; }
-		else { ct[p].push_back(v); ct[v].push_back(p); depth[v] = depth[p] + 1; }
-		parent[v] = p;
+        if(p==-1) { rootIndex = v; }
+        else { ct[p].push_back(v); ct[v].push_back(p); depth[v] = depth[p] + 1; }
+        parent[v] = p;
 
         for(auto &c: originalTree[v]) {
-			if(!processed[c]) _decompose(c, v);
+            if(!processed[c]) _decompose(c, v);
         }
-	}
+    }
 
     void _printEdgeList(int v, int p=-1) {
         for(auto &c: ct[v]) {
