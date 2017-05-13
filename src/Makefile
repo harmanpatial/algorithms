@@ -18,6 +18,9 @@ ct:
 hld:
 	rm -f hld
 	$(CC) $(INC) $(CFLAGS) HLD.cpp -o hld
+st:
+	rm -f st
+	$(CC) $(INC) $(CFLAGS) segmentTree.cpp -o st
 test:
 	rm -f test
 	$(CC) $(INC) $(CFLAGS) test.cpp -o test
@@ -28,5 +31,6 @@ exha:
 clean:
 	rm -f ct
 	rm -f hld
+	rm -f st
 	rm -f test
 	rm -f exha
