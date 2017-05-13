@@ -1,7 +1,8 @@
 CC=g++
 CFLAGS= -std=c++11
 LDFLAGS= -shared -Wl
-INC=-I/usr/local/include -I /usr/local/boost_1_63_0
+#INC=-I/usr/local/include -I /usr/local/boost_1_63_0
+INC=-I/usr/local/include
 
 MAKE = /usr/bin/make
 RM = /bin/rm
@@ -11,14 +12,12 @@ PWD = /bin/pwd
 
 .PHONY: exha exhaFromWeb
 
-#project_code:
- #   $(CC) $(INC)  sortedArrayToBalancedBST.cpp -o sortedArrayToBalancedBST
-#   $(CC) $(INC)  longestIncreasingSequence.cpp -o longestIncreasingSequence
-#   $(CC) $(INC)  knapsackProblem.cpp -o knapsackProblem
-#   $(CC) $(INC)  maxSumContCirArray.cpp -o maxSumContCirArray
-
 ct:
+	rm -f ct
 	$(CC) $(INC) $(CFLAGS) centroidDecomposition.cpp -o ct
+hld:
+	rm -f hld
+	$(CC) $(INC) $(CFLAGS) HLD.cpp -o hld
 test:
 	rm -f test
 	$(CC) $(INC) $(CFLAGS) test.cpp -o test
@@ -28,5 +27,6 @@ exha:
     
 clean:
 	rm -f ct
+	rm -f hld
 	rm -f test
 	rm -f exha
