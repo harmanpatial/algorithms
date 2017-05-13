@@ -35,14 +35,13 @@
 #include <chrono>
 #include <math.h>
 #include <unistd.h>
-#include <boost/lambda/lambda.hpp>
 #include <iterator>
 
 using namespace std;
 
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
-
+typedef vector<string> vs;
 
 /* 
  * Centroid Decomposition
@@ -118,20 +117,6 @@ public:
     }
     
     void printEdgeList() { cout << "Rootnode is: " << rootIndex << endl; _printEdgeList(rootIndex);}
-    
-    void findPath(int u, int v, vi &path) {
-        int l = lca(u, v);
-        int distance = (depth[u] - depth[l]) + (depth[v] - depth[l] + 1);
-        
-        path.resize(distance, 0);
-        
-        int index = 0;
-        while(u!=l) { path[index++] = u; u = parent[u]; }
-        
-        index = distance-1;
-        while(v!=l) { path[index--] = v; v = parent[v]; }
-        path[index] = l;
-    }
 };
 
 void splitString(std::string input, char delim, std::vector<string> &elems) {
@@ -175,21 +160,14 @@ int main(int argc, const char *argv[])
 {
     vector<string> sampleTrees = { "../sampleTrees/tree-1.txt",  "../sampleTrees/tree-2.txt",  "../sampleTrees/tree-3.txt",  "../sampleTrees/tree-4.txt" };
     vector<pair<int, int>> lcaSearch = { {1, 5}, {3, 5}, {1, 10}, {6, 10}};
+    int i=1;
     for(auto &s: sampleTrees) {
+        cout << "Tree: " << i++ << endl;
         vvi inputTree;
         generateTree(inputTree, s);
 
         CentroidTree *instance = new CentroidTree(inputTree);        
-#if 0
-        cout << "Centroid Tree Edge List(" << instance->maxLevel() << "): " << log2(inputTree.size()) << endl;
-        instance->printEdgeList();
-#endif        
-        
-        for(auto &e: lcaSearch) {
-            vi path;
-            cout << "LCA of " << e.first << " and " << e.second << ": " << instance->lca(e.first, e.second) << " ----- ";
-            instance->findPath(e.first, e.second, path);
-            cout << "Path: "; for_each(path.begin(), path.end(), [](const int &n) { cout << n << " ";}); cout << endl;            
-        }
+        for(auto &e: lcaSearch)
+            cout << "LCA of " << e.first << " and " << e.second << ": " << instance->lca(e.first, e.second) << endl;
     }
 }
