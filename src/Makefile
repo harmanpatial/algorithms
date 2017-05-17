@@ -21,16 +21,12 @@ hld:
 st:
 	rm -f st
 	$(CC) $(INC) $(CFLAGS) segmentTree.cpp -o st
-test:
-	rm -f test
-	$(CC) $(INC) $(CFLAGS) test.cpp -o test
-exha:
-	rm -f exha
-	$(CC) $(INC) $(CFLAGS) exhaustiveDataStructuresAndAlgos.cpp -o exha
+mf:
+	rm -f mf
+	$(CC) $(INC) $(CFLAGS) maxFlow.cpp -o mf
     
 clean:
 	rm -f ct
 	rm -f hld
 	rm -f st
-	rm -f test
-	rm -f exha
+	rm -f mf	
