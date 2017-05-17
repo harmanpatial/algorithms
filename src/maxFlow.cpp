@@ -1,8 +1,11 @@
 /*!
- *    \file  factoryClass.cpp
+ *    \file  maxFlow.cpp
  *   \brief  
  *  
- *  <+DETAILED+>
+ *  Implementing MaxFlow Algorithms.
+ *
+ *  1. Augmenting flow.
+ *  2. Dinic's shortest path flow.
  *  
  *  \author  Harman Patial, harman.patial@gmail.com
  *  
@@ -42,7 +45,7 @@ typedef struct edge {
     int w; // Capacity
     int c; // cost -- unit cost
     
-    edge(int vv, int rr, int ww, int cc):v(vv), r(rr), w(ww), c(cc) { residual = w; }
+    edge(int vv, int rr, int ww, int cc):to(vv), reIndex(rr), w(ww), c(cc) { residual = w; }
 } edgeT;
 
 
@@ -56,14 +59,13 @@ class Flow {
 
     bool findPath_(int s, int t, vi &visited, vector<vector<edgeT>::iterator> &path) {
         if(s == t) return true;
-        for(vector<edgeT>::iterator iter = adjList[s].begin(); iter != adjList[s].end(); i++) {
+        for(vector<edgeT>::iterator iter = adjList[s].begin(); iter != adjList[s].end(); ++iter) {
             auto &e = *iter;
             if(e.residual) { // Has Residual Left
                 if(visited[e.to]) continue;
                 visited[e.to] = 1;
                 path.push_back(iter);
-                currentFlow = 
-                if(findPath(neighbor, t, visited, path)) return true;
+                if(findPath_(e.to, t, visited, path)) return true;
                 path.pop_back();
             }
         }
@@ -77,22 +79,22 @@ class Flow {
             minResidual = min(minResidual, path[i]->residual);
     
         cout << "Residual: " << minResidual << " :: Path: " << s << " ";
-        for_each(all(path), [](edgeT *n) { cout << n->v << " "; });
+        for_each(all(path), [](vector<edgeT>::iterator n) { cout << n->to << " "; });
         cout << endl;
 
         maxFlowValue += minResidual;
     
         for(int i=0; i < path.size(); i++) {
-            edgeT *currEdge = path[i];
+            vector<edgeT>::iterator currEdge = path[i];
             currEdge->residual -= minResidual;
-            adjList[currEdge->v][currEdge->r].residual += minResidual;
+            adjList[currEdge->to][currEdge->reIndex].residual += minResidual;
 
         }
     }
 
 public:
 
-    explicit Flow(int vertices): nVertices(vertices), flowValue(0) {}
+    explicit Flow(int vertices): nVertices(vertices), maxFlowValue(0), currentFlow(INT_MAX) { }
 
     void addEdge(int u, int v, int f, int w, int c=0) {
         edgeT edge(v, adjList[v].size(), w, c);
@@ -104,7 +106,7 @@ public:
     
     int genericAugmentPathFlow(int s, int t) {
         maxFlowValue = 0;
-        vector<edge *> path;
+        vector<vector<edgeT>::iterator> path;
         cout << "calculation Flow." << endl;
         vi visited(nVertices+1, 0); visited[s] = 1;
         while(findPath_(s, t, visited, path)) {
@@ -112,6 +114,7 @@ public:
             fill(all(visited), 0);
             path.clear();
             visited[s] = 1;
+            currentFlow = INT_MAX;
         }
         return maxFlowValue;
     }
@@ -120,14 +123,14 @@ public:
         cout << "Edge List : " << endl;
         for(int i=0; i < nVertices+1; i++) {
             for(int j=0; j < adjList[i].size(); j++)
-                cout << "Edge(" << i << ", " << adjList[i][j].v << " ): " << adjList[i][j].residual << endl;
+                cout << "Edge(" << i << ", " << adjList[i][j].to << " ): " << adjList[i][j].residual << endl;
         }
     }
 };
 
 class MaxFlowDinic {
-	vector<vector<EdgeT>> &edgeList;
-	vector<vector<EdgeT>::iterator> path;
+	vector<vector<edgeT>> &edgeList;
+	vector<vector<edgeT>::iterator> path;
 	int currFlowValue;
 	int n;
 	vi d;
@@ -136,25 +139,25 @@ class MaxFlowDinic {
         fill(d.begin(), d.end(), -1); d[s] = 0;
         queue<int> temp; temp.push(s);
         while(!temp.empty()) {
-            int node = temp.top(); temp.pop();
+            int node = temp.front(); temp.pop();
             for(auto &e: edgeList[node])
-                if(d[e.to] < 0 && e.ca > e.f) { d[e.to] = d[node]+1;  temp.push(e.to); }
+                if(d[e.to] < 0 && e.residual) { d[e.to] = d[node]+1;  temp.push(e.to); }
         }
     }
 
     void augmentFlow_() {
 	    for(auto &ei: path) {
-		    EdgeT &e = *ei;
-            e.f += currFlowValue; edgeList[e.v][e.reIndex].f -= currFlowValue;
+		    auto &e = *ei;
+            e.residual -= currFlowValue; edgeList[e.to][e.reIndex].residual += currFlowValue;
 	    }
     }
 
     bool findPath_(int s, int t) {
-	    if(s==t) { augment_(s, t); return true; }
-        for(vector<EdgeT>::iterator iter = edgeList[node].begin(); iter != edgeList[node].end(); ++iter) {
+	    if(s==t) { augmentFlow_(); return true; }
+        for(vector<edgeT>::iterator iter = edgeList[s].begin(); iter != edgeList[s].end(); ++iter) {
 		    auto &e = *iter;
-            if(d[e.to] > s && e.ca > e.f) {
-                path.push_back(iter); currFlowValue = min(currFlowValue, e.ca-e.f);
+            if(d[e.to] > s && e.residual) {
+                path.push_back(iter); currFlowValue = min(currFlowValue, e.residual);
                 if(findPath_(e.to, t)) return true;
             }
 	    }
@@ -162,18 +165,18 @@ class MaxFlowDinic {
     }
 	
 public:
-	explicit MaxFlowPreFlow(vector<vector<EdgeT>> &input):edgeList(input),d(input.size(), -1), currFlowValue(INT_MIN) { path.reserve(V); }
+	explicit MaxFlowDinic(vector<vector<edgeT>> &input):edgeList(input),d(input.size(), -1), currFlowValue(INT_MIN) { path.reserve(input.size()); }
 
     int calculate(int s, int t) {
 	    int totalFlow = 0;
         while(1) {
             bfs_(s);
-            if(d[t] < 0) return;
-            currFlowValue = INT_MAX; path.resize(0);
+            if(d[t] < 0) return totalFlow;
+            currFlowValue = INT_MAX; path.clear();
             while(findPath_(s, t)) {
                 totalFlow += currFlowValue;
                 augmentFlow_();
-                currFlowValue = INT_MAX; path.resize(0);
+                currFlowValue = INT_MAX; path.clear();
 	        }
         }
         return totalFlow;
