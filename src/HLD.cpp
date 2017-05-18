@@ -48,8 +48,8 @@ typedef vector<string> vs;
  *
  * https://blog.anudeep2011.com/heavy-light-decomposition/
  *
- * Best Time:   00:08:38
- * Latest Time: 00:08:38 -- May 17, 2017
+ * Best Time:   00:07:17
+ * Latest Time: 00:07:17 -- May 18, 2017
  */
 class HLD {
     vvi tree;
@@ -160,6 +160,16 @@ int main(int argc, const char *argv[])
             instance->findPath(e.first, e.second, path);
             cout << "Path: "; for_each(path.begin(), path.end(), [](const int &n) { cout << n << " ";}); cout << endl;
         }
+
+#if 0
+        HLDImpl *instanceImpl = new HLDImpl(inputTree);
+        for(auto &e: lcaSearch) {
+            vi path;
+            cout << "LCA of " << e.first << " and " << e.second << ": " << instanceImpl->lca(e.first, e.second) << " ----- ";
+            instanceImpl->findPath(e.first, e.second, path);
+            cout << "Path: "; for_each(path.begin(), path.end(), [](const int &n) { cout << n << " ";}); cout << endl;
+        }
+#endif
     }
     return 0;
 }
