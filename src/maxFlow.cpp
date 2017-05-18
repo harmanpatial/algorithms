@@ -131,13 +131,12 @@ public:
 class MaxFlowDinic {
 	vector<vector<edgeT>> &edgeList;
 	vector<vector<edgeT>::iterator> path;
-	int currFlowValue;
-	int n;
+    int s_, t_;
 	vi d;
 	
-    void bfs_(int s) {
-        fill(d.begin(), d.end(), -1); d[s] = 0;
-        queue<int> temp; temp.push(s);
+    void bfs_() {
+        fill(d.begin(), d.end(), -1); d[s_] = 0;
+        queue<int> temp; temp.push(s_);
         while(!temp.empty()) {
             int node = temp.front(); temp.pop();
             for(auto &e: edgeList[node])
@@ -145,39 +144,30 @@ class MaxFlowDinic {
         }
     }
 
-    void augmentFlow_() {
-	    for(auto &ei: path) {
-		    auto &e = *ei;
-            e.residual -= currFlowValue; edgeList[e.to][e.reIndex].residual += currFlowValue;
-	    }
-    }
-
-    bool findPath_(int s, int t) {
-	    if(s==t) { augmentFlow_(); return true; }
-        for(vector<edgeT>::iterator iter = edgeList[s].begin(); iter != edgeList[s].end(); ++iter) {
+    int augmentFlow_(int u, int currentFlow) {
+	    if(u==t_) { return currentFlow; }
+        for(vector<edgeT>::iterator &iter = path[u]; iter != edgeList[u].end(); ++iter) {
 		    auto &e = *iter;
-            if(d[e.to] > s && e.residual) {
-                path.push_back(iter); currFlowValue = min(currFlowValue, e.residual);
-                if(findPath_(e.to, t)) return true;
+            if(d[e.to] > u && e.residual) {
+                int ff = augmentFlow_(e.to, min(currentFlow, e.residual));
+                if(ff > 0) { e.residual += ff; edgeList[e.to][e.reIndex].residual -= ff; return ff; }
             }
 	    }
-        return false;
+        return 0;
     }
 	
 public:
-	explicit MaxFlowDinic(vector<vector<edgeT>> &input):edgeList(input),d(input.size(), -1), currFlowValue(INT_MIN) { path.reserve(input.size()); }
+	explicit MaxFlowDinic(vector<vector<edgeT>> &input):edgeList(input),s_(-1), t_(-1) { path.reserve(input.size()); }
 
     int calculate(int s, int t) {
+        s_=s; t_=t;
 	    int totalFlow = 0;
-        while(1) {
-            bfs_(s);
+        int f = 0;
+        while(true) {
+            bfs_();
             if(d[t] < 0) return totalFlow;
-            currFlowValue = INT_MAX; path.clear();
-            while(findPath_(s, t)) {
-                totalFlow += currFlowValue;
-                augmentFlow_();
-                currFlowValue = INT_MAX; path.clear();
-	        }
+            for(int i=0; i < path.size(); i++) path[i] = edgeList[i].begin();
+            while((f=augmentFlow_(s, 0))) totalFlow += f;
         }
         return totalFlow;
     }
