@@ -35,6 +35,7 @@ using namespace std;
 
 typedef vector<int> vi;
 typedef vector<vi> vii;
+typedef long long ll;
 #define all(x) x.begin(), x.end()
 
 typedef struct edge {
@@ -128,20 +129,28 @@ public:
     }
 };
 
+
+/*
+ * Dinic's Algorithgm
+ *
+ * Best Time:   00:11:53
+ * Latest Time: 00:11:53 -- May 19, 2017
+ */
 class MaxFlowDinic {
 	vector<vector<edgeT>> &edgeList;
 	vector<vector<edgeT>::iterator> path;
     int s_, t_;
 	vi d;
 	
-    void bfs_() {
-        fill(d.begin(), d.end(), -1); d[s_] = 0;
+    bool bfs_() {
+        fill(all(d), -1); d[s_] = 0;
         queue<int> temp; temp.push(s_);
         while(!temp.empty()) {
             int node = temp.front(); temp.pop();
             for(auto &e: edgeList[node])
                 if(d[e.to] < 0 && e.residual) { d[e.to] = d[node]+1;  temp.push(e.to); }
         }
+        return (d[t_]==-1)?false:true;
     }
 
     int augmentFlow_(int u, int currentFlow) {
@@ -157,19 +166,17 @@ class MaxFlowDinic {
     }
 	
 public:
-	explicit MaxFlowDinic(vector<vector<edgeT>> &input):edgeList(input),s_(-1), t_(-1) { path.reserve(input.size()); }
+	explicit MaxFlowDinic(vector<vector<edgeT>> &input, int s, int t):edgeList(input),s_(s), t_(t) { path.reserve(input.size()); }
 
-    int calculate(int s, int t) {
-        s_=s; t_=t;
-	    int totalFlow = 0;
+    ll calculate() {
+	    int maxFlow = 0;
         int f = 0;
         while(true) {
-            bfs_();
-            if(d[t] < 0) return totalFlow;
+            if(!bfs_()) return maxFlow;
             for(int i=0; i < path.size(); i++) path[i] = edgeList[i].begin();
-            while((f=augmentFlow_(s, 0))) totalFlow += f;
+            while((f=augmentFlow_(s_, 0))) maxFlow += f;
         }
-        return totalFlow;
+        return maxFlow;
     }
 };
 
