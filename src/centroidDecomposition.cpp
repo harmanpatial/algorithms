@@ -39,6 +39,8 @@
 
 using namespace std;
 
+#define all(d) d.begin(), d.end()
+
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
 typedef vector<string> vs;
@@ -139,7 +141,7 @@ void generateTree(vvi &tree, string &fileName) {
         // First Line
         getline(myfile, line);
         int n = stoi(line);
-        int nEdges = n+1;
+        int nEdges = n-1;
         token.clear();
 
         tree.resize(n+1, vector<int> ());
@@ -158,7 +160,7 @@ void generateTree(vvi &tree, string &fileName) {
 
 int main(int argc, const char *argv[])
 {
-    vector<string> sampleTrees = { "../sampleTrees/tree-1.txt",  "../sampleTrees/tree-2.txt",  "../sampleTrees/tree-3.txt",  "../sampleTrees/tree-4.txt" };
+    vector<string> sampleTrees = { "../sampleTrees/tree-1.txt", "../sampleTrees/tree-2.txt",  "../sampleTrees/tree-3.txt",  "../sampleTrees/tree-4.txt" };
     vector<pair<int, int>> lcaSearch = { {1, 5}, {3, 5}, {1, 10}, {6, 10}};
     int i=1;
     for(auto &s: sampleTrees) {
@@ -166,8 +168,16 @@ int main(int argc, const char *argv[])
         vvi inputTree;
         generateTree(inputTree, s);
 
-        CentroidTree *instance = new CentroidTree(inputTree);        
+        CentroidTree *instance = new CentroidTree(inputTree);
         for(auto &e: lcaSearch)
             cout << "LCA of " << e.first << " and " << e.second << ": " << instance->lca(e.first, e.second) << endl;
+ 
+ #if 0
+        {
+            CentroidTreeImpl *instance = new CentroidTreeImpl(inputTree);
+            for(auto &e: lcaSearch)
+                cout << "Impl LCA of " << e.first << " and " << e.second << ": " << instance->lca(e.first, e.second) << endl;
+        }
+#endif
     }
 }
