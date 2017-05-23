@@ -126,7 +126,7 @@ void generateTree(vvi &tree, string &fileName) {
         // First Line
         getline(myfile, line);
         int n = stoi(line);
-        int nEdges = n+1;
+        int nEdges = n-1;
         token.clear();
 
         tree.resize(n+1, vector<int> ());
@@ -165,9 +165,9 @@ int main(int argc, const char *argv[])
         HLDImpl *instanceImpl = new HLDImpl(inputTree);
         for(auto &e: lcaSearch) {
             vi path;
-            cout << "LCA of " << e.first << " and " << e.second << ": " << instanceImpl->lca(e.first, e.second) << " ----- ";
+            cout << "Impl LCA of " << e.first << " and " << e.second << ": " << instanceImpl->lca(e.first, e.second) << " ----- ";
             instanceImpl->findPath(e.first, e.second, path);
-            cout << "Path: "; for_each(path.begin(), path.end(), [](const int &n) { cout << n << " ";}); cout << endl;
+            cout << "Impl Path: "; for_each(path.begin(), path.end(), [](const int &n) { cout << n << " ";}); cout << endl;
         }
 #endif
     }

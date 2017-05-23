@@ -151,7 +151,6 @@ int main(int argc, const char *argv[])
         for(int i=0; i < m; i++) {
             int u, v, w, cost; cin>>u>>v>>w>>cost;
             addEdge(adjList, u, v, 0, w, cost);
-            //instance->addEdge(u, v, 0, w, cost);
         }
 
         auto_ptr<Flow> instance(new Flow(adjList, 1, n));
