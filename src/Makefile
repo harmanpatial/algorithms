@@ -24,9 +24,13 @@ st:
 mf:
 	rm -f mf
 	$(CC) $(INC) $(CFLAGS) maxFlow.cpp -o mf
+mst:
+	rm -f mst
+	$(CC) $(INC) $(CFLAGS) mst.cpp -o mst
     
 clean:
 	rm -f ct
 	rm -f hld
 	rm -f st
-	rm -f mf	
+	rm -f mf
+	rm -f mst

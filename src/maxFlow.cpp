@@ -94,30 +94,30 @@ public:
  * Dinic's Algorithgm
  *
  * Best Time:   00:11:53
- * Latest Time: 00:11:53 -- May 19, 2017
+ * Latest Time: 00:12:21 -- May 29, 2017
  */
 class MaxFlowDinic {
 	vector<vector<edgeT>> &edgeList;
 	vector<vector<edgeT>::iterator> path;
-    int s_, t_;
+    int s, t;
 	vi d;
 	
     bool bfs_() {
-        fill(all(d), -1); d[s_] = 0;
+        fill(all(d), -1); d[s] = 0;
         queue<int> temp; temp.push(s_);
         while(!temp.empty()) {
             int node = temp.front(); temp.pop();
             for(auto &e: edgeList[node])
                 if(d[e.to] < 0 && e.residual) { d[e.to] = d[node]+1;  temp.push(e.to); }
         }
-        return (d[t_]==-1)?false:true;
+        return (d[t]==-1)?false:true;
     }
 
-    ll augmentFlow_(int u, int f) {
-	    if(u==t_) return f;
+    ll augmentFlow_(int u, int f=INT_MAX) {
+	    if(u==t) return f;
         for(auto &iter = path[u]; iter != edgeList[u].end(); ++iter) {
 		    edgeT &e = *iter;
-            if(d[e.to] > u && e.residual) {
+            if(d[e.to] > d[u] && e.residual) {
                 int realFlow = augmentFlow_(e.to, min(f, e.residual));
                 if(realFlow > 0) { e.residual -= realFlow; edgeList[e.to][e.reIndex].residual += realFlow; return realFlow; }
             }
@@ -126,7 +126,7 @@ class MaxFlowDinic {
     }
 	
 public:
-	explicit MaxFlowDinic(vector<vector<edgeT>> &input, int s, int t):edgeList(input),s_(s), t_(t) { path.reserve(input.size()); }
+	explicit MaxFlowDinic(vector<vector<edgeT>> &input, int source, int terminal):edgeList(input),s(source), t(terminal) { path.reserve(input.size()); }
 
     ll calculate() {
 	    ll maxFlow = 0;
@@ -134,7 +134,7 @@ public:
         while(true) {
             if(!bfs_()) return maxFlow;
             for(int i=0; i < path.size(); i++) path[i] = edgeList[i].begin();
-            while((f=augmentFlow_(s_, 0))) maxFlow += f;
+            while((f=augmentFlow_(s))) maxFlow += f;
         }
         return maxFlow;
     }
