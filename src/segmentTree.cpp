@@ -47,6 +47,9 @@ typedef struct { int mi; int ma; } nodeT;
 
 /*
  * Segment Tree
+ *
+ * Best Time:   00:08:08
+ * Latest Time: 00:08:08 -- May 16, 2017
  */
 class ST {
     vi &values;

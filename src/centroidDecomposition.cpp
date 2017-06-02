@@ -55,7 +55,7 @@ typedef vector<string> vs;
  * (i.e. For any given tree, the centroid always exists)
  *
  * Best Time:   00:08:04
- * Latest Time: 00:08:04 -- May 12, 2017
+ * Latest Time: 00:09:52 -- June 2, 2017
  */
 class CentroidTree {
     vector<vector<int>> &originalTree;

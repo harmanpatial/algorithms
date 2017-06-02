@@ -49,7 +49,7 @@ typedef vector<string> vs;
  * https://blog.anudeep2011.com/heavy-light-decomposition/
  *
  * Best Time:   00:07:17
- * Latest Time: 00:07:17 -- May 18, 2017
+ * Latest Time: 00:09:21 -- June 2, 2017
  */
 class HLD {
     vvi tree;
@@ -173,3 +173,4 @@ int main(int argc, const char *argv[])
     }
     return 0;
 }
+
