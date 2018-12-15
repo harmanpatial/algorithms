@@ -36,6 +36,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <iterator>
+#include <memory>
 
 using namespace std;
 
@@ -153,7 +154,7 @@ int main(int argc, const char *argv[])
         vvi inputTree;
         generateTree(inputTree, s);
 
-        HLD *instance = new HLD(inputTree);
+        shared_ptr<HLD> instance(new HLD(inputTree));
         for(auto &e: lcaSearch) {
             vi path;
             cout << "LCA of " << e.first << " and " << e.second << ": " << instance->lca(e.first, e.second) << " ----- ";

@@ -21,7 +21,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
-#include <set>
+#include <unordered_map>
 #include <queue>
 #include <stack>
 #include <algorithm>
@@ -33,10 +33,7 @@
 
 using namespace std;
 
-typedef vector<int> vi;
-typedef vector<vi> vii;
 typedef long long ll;
-#define all(x) x.begin(), x.end()
 
 typedef struct edge {
     int to; // Neighbouring Vertex
@@ -49,9 +46,9 @@ typedef struct edge {
     edge(int vv, int rr, int ww, int cc):to(vv), reIndex(rr), w(ww), c(cc) { residual = w; }
 } edgeT;
 
-void addEdge(vector<vector<edgeT>> &adjList, int u, int v, int f, int w, int c=0) {
-    edgeT edge(v, adjList[v].size(), w, c);
-    edgeT reverseEdge(u, adjList[u].size(), 0, c);
+void addEdge(unordered_map<int, vector<edgeT>> &adjList, int u, int v, int f, int w, int c=0) {
+    edgeT edge(v, (adjList.find(v)==adjList.end())?0:adjList[v].size(), w, c);
+    edgeT reverseEdge(u, (adjList.find(u)==adjList.end())?0:adjList[u].size(), 0, c);
 
     adjList[u].push_back(edge);
     adjList[v].push_back(reverseEdge);
@@ -97,18 +94,18 @@ public:
  * Latest Time: 00:12:21 -- May 29, 2017
  */
 class MaxFlowDinic {
-	vector<vector<edgeT>> &edgeList;
+	unordered_map<int, vector<edgeT>> &edgeList;
 	vector<vector<edgeT>::iterator> path;
     int s, t;
-	vi d;
+	vector<int> d;
 	
     bool bfs_() {
-        fill(all(d), -1); d[s] = 0;
-        queue<int> temp; temp.push(s_);
-        while(!temp.empty()) {
-            int node = temp.front(); temp.pop();
+        fill(d.begin(), d.end(), -1); d[s] = 0;
+        queue<int> q; q.push(s);
+        while(!q.empty()) {
+            int node = q.front(); q.pop();
             for(auto &e: edgeList[node])
-                if(d[e.to] < 0 && e.residual) { d[e.to] = d[node]+1;  temp.push(e.to); }
+                if(d[e.to] < 0 && e.residual) { d[e.to] = d[node]+1;  q.push(e.to); }
         }
         return (d[t]==-1)?false:true;
     }
@@ -126,13 +123,12 @@ class MaxFlowDinic {
     }
 	
 public:
-	explicit MaxFlowDinic(vector<vector<edgeT>> &input, int source, int terminal):edgeList(input),s(source), t(terminal) { path.reserve(input.size()); }
+	explicit MaxFlowDinic(unordered_map<int, vector<edgeT>> &input, int source, int terminal):edgeList(input),s(source),t(terminal),d(input.size()+1),path(input.size()) { }
 
     ll calculate() {
 	    ll maxFlow = 0;
         ll f = 0;
-        while(true) {
-            if(!bfs_()) return maxFlow;
+        while(bfs_()) {
             for(int i=0; i < path.size(); i++) path[i] = edgeList[i].begin();
             while((f=augmentFlow_(s))) maxFlow += f;
         }
@@ -142,20 +138,20 @@ public:
 
 int main(int argc, const char *argv[])
 {
-    
+    freopen("../sampleGraphs/maxFlow-graph1.txt", "r", stdin);
+
     if(1) {
         int n,m; cin>>n>>m;
 
-        vector<vector<edgeT>> adjList(n);
+        unordered_map<int, vector<edgeT>> adjList(n);
         
         for(int i=0; i < m; i++) {
             int u, v, w, cost; cin>>u>>v>>w>>cost;
             addEdge(adjList, u, v, 0, w, cost);
         }
 
-        auto_ptr<Flow> instance(new Flow(adjList, 1, n));
+        auto_ptr<MaxFlowDinic> instance(new MaxFlowDinic(adjList, 1, n));
         cout << "Max Flow: " << instance->calculate() << endl;
-        instance->printGraph();
     }
         
 	return 0;

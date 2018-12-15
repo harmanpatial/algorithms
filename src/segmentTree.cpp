@@ -39,20 +39,10 @@
 
 using namespace std;
 
-typedef vector<int> vi;
-typedef vector<vector<int>> vvi;
-typedef vector<string> vs;
-
 typedef struct { int mi; int ma; } nodeT;
 
-/*
- * Segment Tree
- *
- * Best Time:   00:08:08
- * Latest Time: 00:08:08 -- May 16, 2017
- */
 class ST {
-    vi &values;
+    vector<int> &values;
     vector<nodeT> st;
 
     void postProcessing(int pos) {
@@ -80,7 +70,7 @@ class ST {
         query_(queryInput, results, ((cl+cr)/2)+1, cr, 2*pos+2);
     }
 public:
-    explicit ST(vi &input):values(input), st(2*input.size()+1) {
+    explicit ST(vector<int> &input):values(input), st(2*input.size()+1) {
         create_(0, values.size(), 0);
     }
 
@@ -102,7 +92,7 @@ void testRangeSearchMinMax(bool debugOn=false) {
         inputSize = rand()%1000;
         input.resize(inputSize, 0);
         generate(input.begin(), input.end(), rand);
-        
+
         ST *instance = new ST(input);
         cout << "Size of the input vector: " << input.size() << endl;        
         
